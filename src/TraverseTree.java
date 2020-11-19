@@ -5,6 +5,8 @@
 把这些数组元素填充进去。
 */
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 // define tree's Node class
@@ -120,6 +122,42 @@ public class TraverseTree {
     }
 
 
+    /**
+     * mid traversal is left mid right, so left son node appear before parent node, so the key point is how to
+     * save parent node's informatiron.
+     * how? use a new node to save. so wo need two tmp node, one save son's information, one save parent's information.
+     */
+
+    //define method, argument(root node)
+    public List<Integer> midTraversalCycle(Node root) {
+        List<Integer> list = new ArrayList<>();
+
+        //define son node cur; define parent node parent
+        Node cur = root;
+        Node curParent = null;
+
+        //define stack
+        Stack<Node> stack = new Stack<Node>();
+        //while cur is null & stack is empty
+        while (cur != null || !stack.isEmpty()) {
+            //cur in stack,cur = cur.left,
+            if (cur != null) {
+                stack.push(cur);
+                cur = cur.left;
+            } else {
+                curParent = stack.pop();
+//                System.out.println(curParent.value);
+                list.add(curParent.value);
+                //curparent = stack.pop, print value
+                //cur = curparent.right
+                cur = curParent.right;
+            }
+        }
+
+        System.out.println(list);
+
+        return list;
+    }
 
 
     public static void main(String[] args) {
@@ -132,7 +170,7 @@ public class TraverseTree {
 
 //        tree.postOrderTraversal(root);
 
-        tree.preOrderTravCycle(root);
+        tree.midTraversalCycle(null);
 
         System.out.println("done!");
     }
