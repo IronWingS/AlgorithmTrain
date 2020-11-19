@@ -1,15 +1,10 @@
-/*
-二叉树就是父节点最多只有两个子节点的树。
-我这里打算使用最基础的链表来实现，
-需要给定树的深度，或者其实应该给定树中包含的元素，也就是一个数组
-把这些数组元素填充进去。
-*/
+package BinaryTree;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-// define tree's Node class
+// define tree's BinaryTree.Node class
 class Node {
     // a parametric structure give value
     int value;
@@ -25,6 +20,12 @@ class Node {
 // main class
 public class TraverseTree {
 
+    /*
+        二叉树就是父节点最多只有两个子节点的树。
+        我这里打算使用最基础的链表来实现，
+        需要给定树的深度，或者其实应该给定树中包含的元素，也就是一个数组
+        把这些数组元素填充进去。
+    */
     public Node createTree(int n) {
         return process(1, n);
     }
@@ -159,6 +160,39 @@ public class TraverseTree {
         return list;
     }
 
+    /*
+    利用循环后序遍历一棵树
+    利用两个栈实现这个效果
+    s1用左右中的顺序入栈，然后依次出栈再入栈s2，此时s2再出栈也是左右中
+        这里就相当于是用两个栈实现了一个队列
+
+    定义方法（参数：根节点root）返回值 List<Integer>
+    root非空判断
+    定义两个栈，临时节点node，List
+    root赋值给node，并入s1栈
+    while循环（s1）不为空
+    s1出栈，存入node，然后s2入栈
+    node左子节点入栈s1，node右子节点入栈s1
+    s2出栈，并将数值保存到list中
+*/
+    public List<Integer> backTreeCycle(Node root) {
+        List<Integer> list = new ArrayList<>();
+        Stack<Node> stack1 = new Stack<>();
+        Stack<Node> stack2 = new Stack<>();
+        Node node = root;
+        stack1.push(node);
+        while (!stack1.isEmpty()) {
+            node = stack1.pop();
+            stack2.push(node);
+            if (node.left != null) stack1.push(node.left);
+            if (node.right != null) stack1.push(node.right);
+        }
+        while (!stack2.isEmpty()) {
+            list.add(stack2.pop().value);
+        }
+        System.out.println(list);
+        return list;
+    }
 
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
@@ -170,7 +204,9 @@ public class TraverseTree {
 
 //        tree.postOrderTraversal(root);
 
-        tree.midTraversalCycle(null);
+//        tree.midTraversalCycle(null);
+
+        tree.backTreeCycle(root);
 
         System.out.println("done!");
     }
