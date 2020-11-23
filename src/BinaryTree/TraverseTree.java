@@ -194,6 +194,51 @@ public class TraverseTree {
         return list;
     }
 
+        /*
+		利用一个栈实现树的后序遍历，后序遍历是左右中。
+		那关键就是在遍历树的过程中，不断的找到左子节点，并保留该节点的根节点。
+		然后就可以找到该节点的右子节点，然后就可以输出该根节点，这样就能达到按照左右中的顺序遍历树的效果
+		也就是说，这个过程是入栈出栈交替进行的，并不是把一颗完整的树全部入栈之后，再按照特定的顺序出栈。
+		这就是所谓的算法
+    */
+
+    /*
+        具体的过程，也就是伪代码
+        定义方法（参数：根节点root）返回值 List<Integer>
+        定义返回的list
+        定义栈
+        定义临时节点head=root，cur为空
+        head入栈
+        while循环（栈不为空）
+        cur指针指向栈顶元素
+        判断cur节点的左子节点不为空，
+            同时判断cur节点的左子节点和head节点不相等，以及cur节点的右子节点和head节点不相等。条件满足就入栈。
+        判断cur节点的右子节点不为空，且不和head节点相等，满足条件就入栈，
+        如果为空，cur出栈，并将该值赋给head节点，保存节点的vlalue值到list
+    */
+    public List<Integer> backTreeCycle1(Node root) {
+        List<Integer> list = new ArrayList<>();
+        Stack<Node> stack = new Stack<>();
+        Node head = root;
+        Node cur = null;
+        if (root != null){
+            stack.push(head);
+            while (!stack.isEmpty()) {
+                cur = stack.peek();
+                if (cur.left != null && cur.left != head && cur.right != head) {
+                    stack.push(cur.left);
+                } else if (cur.right != null && cur.right != head) {
+                    stack.push(cur.right);
+                } else {
+                    head = stack.pop();
+                    list.add(head.value);
+                }
+            }
+        }
+        System.out.println(list);
+        return list;
+    }
+
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
         Node root = tree.createTree(7);
@@ -206,7 +251,7 @@ public class TraverseTree {
 
 //        tree.midTraversalCycle(null);
 
-        tree.backTreeCycle(root);
+        tree.backTreeCycle1(root);
 
         System.out.println("done!");
     }
