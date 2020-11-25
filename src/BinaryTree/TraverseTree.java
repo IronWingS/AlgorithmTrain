@@ -239,6 +239,34 @@ public class TraverseTree {
         return list;
     }
 
+    /*
+    获得数的最小深度：
+        数的深度的定义是，根节点到叶子节点之间所有节点的个数。
+        所以思路就是遍历树，当遍历到叶子节点的时候，比较一下这个叶子节点的高度和当前最小值，取最小即可。
+
+        用递归先序遍历即可。得有一个树的高度计数器，每迭代一次，计数器的值就加1，递归结束，返回该计数器。
+
+        比较一下返回的值和当前的值，谁小，保留谁。
+
+        树遍历完毕，返回最小的高度。
+     */
+    public int minDeep(Node root) {
+        if (root != null)
+            return minDeepProcess(root, 1);
+        return 0;
+    }
+
+    private int minDeepProcess(Node node, int depth) {
+        if (node.left == null && node.right == null){
+            return depth;
+        }
+        int cur = Integer.MAX_VALUE;
+        if (node.left != null) cur = Math.min(minDeepProcess(node.left, depth + 1),cur);
+        if (node.right != null) cur = Math.min(minDeepProcess(node.right, depth +1),cur);
+        return cur;
+    }
+
+
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
         Node root = tree.createTree(7);
@@ -251,8 +279,10 @@ public class TraverseTree {
 
 //        tree.midTraversalCycle(null);
 
-        tree.backTreeCycle1(root);
+//        tree.backTreeCycle1(root);
 
+        int deepth = tree.minDeep(root);
+        System.out.println(deepth);
         System.out.println("done!");
     }
 }
