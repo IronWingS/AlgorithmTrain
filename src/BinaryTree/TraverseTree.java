@@ -257,13 +257,71 @@ public class TraverseTree {
     }
 
     private int minDeepProcess(Node node, int depth) {
-        if (node.left == null && node.right == null){
+        if (node.left == null && node.right == null) {
             return depth;
         }
         int cur = Integer.MAX_VALUE;
-        if (node.left != null) cur = Math.min(minDeepProcess(node.left, depth + 1),cur);
-        if (node.right != null) cur = Math.min(minDeepProcess(node.right, depth +1),cur);
+        if (node.left != null) cur = Math.min(minDeepProcess(node.left, depth + 1), cur);
+        if (node.right != null) cur = Math.min(minDeepProcess(node.right, depth + 1), cur);
         return cur;
+    }
+
+
+    /*
+    算法的核心是树的反序遍历。
+    不同的是打印值的方法。 每位都得保证为17，然后首先得打印层数乘17的空格，然后判断需要补多少个空格；
+    （17 - 数字的长度 - 2） / 2 这就是需要补充的空格。
+    然后就是右节点的标志位为v，左节点的标志位为^，根节点为H，左右各两个。
+
+     首先得有一个递归遍历的方法，
+     然后就是一个打印值的方法，
+
+    程序入口 void（根节点）{
+        反序遍历（根节点，H，17）
+    }
+    */
+    public void printTree(Node root) {
+        if (root == null) return;
+        printInOrder(root, 1, "H", 17);
+    }
+
+    /*
+    反序遍历树的方法 void（节点，树的层数，标记位，总长度）{
+        递归结束条件，非空
+        递归右子节点（右子节点，v，长度）
+        lenm标记位加节点值
+        左边空格=(总长度-lenm) / 2
+        右边空格=总长度-左边空格-lenm
+        result=拼接左右空格和lenm
+        获得每层的空格，和result拼接
+        递归左子节点（左子节点，^，长度）
+    }
+    */
+    public void printInOrder(Node node, int layer, String to, int len) {
+        if (node == null)
+            return;
+        printInOrder(node.right, layer + 1, "v", len);
+        String val = to + node.value + to;
+        int lenM = val.length();
+        int lenL = (len - lenM) / 2;
+        int lenR = len - lenL - lenM;
+        val = getSpace(lenL) + val + getSpace(lenR);
+        System.out.println(getSpace(layer * len) + val);
+        printInOrder(node.left, layer + 1, "^", len);
+    }
+
+    /*
+    获得空格的方法 sb（空格数）{
+        定义StringBuffer
+        foreach循环在sb中添加该数量的空格
+        返回sb
+    }*/
+    public StringBuffer getSpace(int num) {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < num; i++) {
+            sb.append(" ");
+        }
+        return sb;
     }
 
 
@@ -273,6 +331,8 @@ public class TraverseTree {
 
 //        tree.preOrderTraversal(root);
 
+        Integer a = null;
+
 //        tree.midOrderTraversal(root);
 
 //        tree.postOrderTraversal(root);
@@ -281,8 +341,10 @@ public class TraverseTree {
 
 //        tree.backTreeCycle1(root);
 
-        int deepth = tree.minDeep(root);
-        System.out.println(deepth);
+//        int deepth = tree.minDeep(root);
+//        System.out.println(deepth);
+
+        tree.printTree(root);
         System.out.println("done!");
     }
 }
