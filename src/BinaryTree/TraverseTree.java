@@ -325,6 +325,47 @@ public class TraverseTree {
     }
 
 
+    /*
+定义方法（根结点）返回null{
+	根结点非空判断
+	判断是否有左子树
+	如果有{
+		一直遍历到最右子节点，且不能等于当前节点
+		如果最右子节点的右指针指向null{
+			该指针指向cur当前节点
+			cur = cur.left
+		}否则{
+			该指针指向null
+			cur = cur.right
+		}
+	} 否则 {
+		cur = cur.right
+	}
+}*/
+
+    public void morris(Node root){
+        Node cur = root;
+        while (cur != null) {
+            System.out.println(cur.value);
+            if (cur.left != null) {
+                Node tmp = cur.left;
+                while(tmp.right != null && tmp.right != cur){
+                    tmp = tmp.right;
+                }
+                if (tmp.right == null) {
+                    tmp.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    tmp.right = null;
+                }
+            }
+            cur = cur.right;
+        }
+
+    }
+
+
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
         Node root = tree.createTree(7);
@@ -344,7 +385,9 @@ public class TraverseTree {
 //        int deepth = tree.minDeep(root);
 //        System.out.println(deepth);
 
-        tree.printTree(root);
+//        tree.printTree(root);
+
+        tree.morris(root);
         System.out.println("done!");
     }
 }
