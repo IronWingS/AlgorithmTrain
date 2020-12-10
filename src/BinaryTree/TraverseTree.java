@@ -221,7 +221,7 @@ public class TraverseTree {
         Stack<Node> stack = new Stack<>();
         Node head = root;
         Node cur = null;
-        if (root != null){
+        if (root != null) {
             stack.push(head);
             while (!stack.isEmpty()) {
                 cur = stack.peek();
@@ -343,13 +343,13 @@ public class TraverseTree {
 	}
 }*/
 
-    public void morris(Node root){
+    public void morris(Node root) {
         Node cur = root;
         while (cur != null) {
             System.out.println(cur.value);
             if (cur.left != null) {
                 Node tmp = cur.left;
-                while(tmp.right != null && tmp.right != cur){
+                while (tmp.right != null && tmp.right != cur) {
                     tmp = tmp.right;
                 }
                 if (tmp.right == null) {
@@ -365,6 +365,77 @@ public class TraverseTree {
 
     }
 
+    public void morris1(Node root) {
+        Node cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                Node mostRight = cur.left;
+                while (mostRight.right != null && mostRight.right != cur) {
+                    mostRight = mostRight.right;
+                }
+                if (mostRight.right == null) {
+                    mostRight.right = cur;
+                    System.out.println(cur.value);
+                    cur = cur.left;
+                    continue;
+                } else {
+                    mostRight.right = null;
+                }
+            } else {
+                // 这里就就是叶子节点
+                // 如果不加else，那么所有的while循环之后，除了continu之外的值，都会被打印一遍。
+                System.out.println(cur.value);
+            }
+            cur = cur.right;
+        }
+    }
+
+    public void morrisPre(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                Node mostRight = cur.left;
+                while (mostRight.right != null && mostRight.right != cur) {
+                    mostRight = mostRight.right;
+                }
+                if (mostRight.right == null) {
+                    mostRight.right = cur;
+                    System.out.println(cur.value);
+                    cur = cur.left;
+                    continue;
+                } else {
+                    mostRight.right = null;
+                }
+            } else {
+                System.out.println(cur.value);
+            }
+
+            cur = cur.right;
+        }
+    }
+
+    public void morrisMid(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                Node mostRight = cur.left;
+                while (mostRight.right != null && mostRight.right != cur) {
+                    mostRight = mostRight.right;
+                }
+                if (mostRight.right == null) {
+                    mostRight.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    mostRight.right = null;
+                }
+            }
+            System.out.println(cur.value);
+            cur = cur.right;
+        }
+    }
 
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
@@ -385,9 +456,9 @@ public class TraverseTree {
 //        int deepth = tree.minDeep(root);
 //        System.out.println(deepth);
 
-//        tree.printTree(root);
+        tree.printTree(root);
 
-        tree.morris(root);
+        tree.morrisMid(root);
         System.out.println("done!");
     }
 }
