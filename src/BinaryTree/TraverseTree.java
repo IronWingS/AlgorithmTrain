@@ -437,6 +437,51 @@ public class TraverseTree {
         }
     }
 
+    public void morrisBak(Node root) {
+        if (root == null) return;
+        Node cur = root;
+        while (cur != null) {
+            if (cur.left != null) {
+                Node mostRight = cur.left;
+                while (mostRight.right != null && mostRight.right != cur) {
+                    mostRight = mostRight.right;
+                }
+                if (mostRight.right == null) {
+                    mostRight.right = cur;
+                    cur = cur.left;
+                    continue;
+                } else {
+                    mostRight.right = null;
+                    printEdge(cur.left);
+                }
+            }
+            cur = cur.right;
+        }
+        printEdge(root);
+    }
+
+    private void printEdge(Node head){
+        Node tail = reverseEdge(head);
+        Node cur = tail;
+        while(cur != null){
+            System.out.println(cur.value);
+            cur = cur.right;
+        }
+        reverseEdge(tail);
+    }
+
+    private Node reverseEdge(Node head){
+        Node pre = null;
+        Node next = null;
+        while(head != null){
+            next = head.right;
+            head.right = pre;
+            pre = head;
+            head = next;
+        }
+        return pre;
+    }
+
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
         Node root = tree.createTree(7);
@@ -458,7 +503,7 @@ public class TraverseTree {
 
         tree.printTree(root);
 
-        tree.morrisMid(root);
+        tree.morrisBak(root);
         System.out.println("done!");
     }
 }
