@@ -529,6 +529,7 @@ public class TraverseTree {
      * 反向序列化，这个思路是，利用栈保存整个树，然后根据先序遍历树的顺序，将数组中的值依次填写进去。
      * 需要注意的是，遍历数组的时候，一定要考虑边界值，否则一定会出现数组越界和空栈异常。
      * 但是，还有一个做这个题更好的数据结构，我没有想到，就是队列。
+     *
      * @param s
      * @return
      */
@@ -563,7 +564,7 @@ public class TraverseTree {
         return root;
     }
 
-    public Node deSerilizeQueue(String s){
+    public Node deSerilizeQueue(String s) {
         String[] sari = s.split("!");
         Queue<String> queue = new LinkedList<String>();
         for (String value : sari) {
@@ -572,18 +573,73 @@ public class TraverseTree {
         return byRecursion(queue);
     }
 
-    private Node byRecursion(Queue<String> queue){
+    private Node byRecursion(Queue<String> queue) {
         String s = queue.poll();
-        if (s.equals("#")){
+        // 这里的断言，不知道会怎么处理，没有用过。
+        assert s != null;
+        if (s.equals("#")) {
             return null;
         }
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("a" + " !");
+
         Node head = new Node(Integer.parseInt(s));
         head.left = byRecursion(queue);
         head.right = byRecursion(queue);
         return head;
     }
 
+/*
+定义方法 按层遍历序列化二叉树 返回值字符串（根结点）{
+	定义队列
+	头节点入队
+	定义一个StringBuffer
+	while队列不为空，{
+		临时节点 = 出队
+		如果节点为空{
+			sb加入 #！
+		} 否则 {
+			sb加入出队节点的值！
+			如果节点值左子节点不为空，入队
+			如果节点值右子节点不为空，入队
+		}
+	}
+}
+*/
 
+    /**
+     * 我之前的想法是，如果树的节点为空，那么也在队列中填充一个null。
+     * 这样确实显得，就有点多此一举了。
+     * 队列只是用来保证，按层的顺序遍历树的，所以没有必要对空子节点进行额外的处理。
+     * 其次就是，如果树本身为空，那就应该返回 #！而不是一个空字符串。
+     */
+    public String layerSerilize(Node head) {
+        if (head == null) {
+            return "#！";
+        }
+        Queue<Node> queue = new LinkedList<>();
+        String s = head.value + "!";
+        queue.offer(head);
+        while (!queue.isEmpty()) {
+            Node cur = queue.poll();
+
+            if (cur.left != null) {
+                s += (cur.left.value + "!");
+                queue.offer(cur.left);
+            } else {
+                s += "#!";
+            }
+            if (cur.right != null) {
+                s += (cur.right.value + "!");
+                queue.offer(cur.right);
+            } else {
+                s += "#!";
+            }
+
+        }
+        return s;
+    }
 
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
@@ -609,8 +665,9 @@ public class TraverseTree {
 //        tree.morrisBak(root);
 
 //        tree.seriesTree(root, "pre");
-        Node root1 = tree.deSerilizeQueue("1!2!4!#!#!5!#!#!3!6!#!#!7!#!#!");
-        tree.printTree(root1);
+//        Node root1 = tree.deSerilizeQueue("1!2!4!#!#!5!#!#!3!6!#!#!7!#!#!");
+//        tree.printTree(root1);
+        System.out.println(tree.layerSerilize(root));
         System.out.println("done!");
     }
 }
