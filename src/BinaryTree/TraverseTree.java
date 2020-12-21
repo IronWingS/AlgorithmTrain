@@ -1,8 +1,6 @@
 package BinaryTree;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 // define tree's BinaryTree.Node class
 class Node {
@@ -460,20 +458,20 @@ public class TraverseTree {
         printEdge(root);
     }
 
-    private void printEdge(Node head){
+    private void printEdge(Node head) {
         Node tail = reverseEdge(head);
         Node cur = tail;
-        while(cur != null){
+        while (cur != null) {
             System.out.println(cur.value);
             cur = cur.right;
         }
         reverseEdge(tail);
     }
 
-    private Node reverseEdge(Node head){
+    private Node reverseEdge(Node head) {
         Node pre = null;
         Node next = null;
-        while(head != null){
+        while (head != null) {
             next = head.right;
             head.right = pre;
             pre = head;
@@ -481,6 +479,111 @@ public class TraverseTree {
         }
         return pre;
     }
+
+    public void seriesTree(Node root, String way) {
+        if (root == null) {
+            return;
+        }
+        String s = "";
+        if (way.equals("pre"))
+            System.out.println(byPreOrder(root));
+        if (way.equals("mid"))
+            System.out.println(byMidOrder(root));
+        if (way.equals("back"))
+            System.out.println(byBackOrder(root));
+    }
+
+    private String byPreOrder(Node cur) {
+        if (cur == null) {
+            return "#!";
+        }
+        // 这样就相当于，每次递归都创建一个String的字符串
+        String s = cur.value + "!";
+        s += byPreOrder(cur.left);
+        s += byPreOrder(cur.right);
+        return s;
+    }
+
+    private String byMidOrder(Node cur) {
+        if (cur == null) {
+            return "#!";
+        }
+        String s = "";
+        s += byMidOrder(cur.left);
+        s += cur.value + "!";
+        s += byMidOrder(cur.right);
+        return s;
+    }
+
+    private String byBackOrder(Node cur) {
+        if (cur == null)
+            return "#!";
+        String s = "";
+        s += byBackOrder(cur.left);
+        s += byBackOrder(cur.right);
+        s += cur.value + "!";
+        return s;
+    }
+
+    /**
+     * 反向序列化，这个思路是，利用栈保存整个树，然后根据先序遍历树的顺序，将数组中的值依次填写进去。
+     * 需要注意的是，遍历数组的时候，一定要考虑边界值，否则一定会出现数组越界和空栈异常。
+     * 但是，还有一个做这个题更好的数据结构，我没有想到，就是队列。
+     * @param s
+     * @return
+     */
+    public Node deSerilizationTree(String s) {
+        if (s == null || s.equals("")) {
+            return null;
+        }
+        String[] sarr = s.split("!");
+        Node root = new Node(Integer.parseInt(sarr[0]));
+        Node cur = root;
+        Stack<Node> stack = new Stack<>();
+        stack.push(cur);
+        for (int i = 1; i < sarr.length; ) {
+            if (sarr[i].equals("#")) {
+                stack.pop();
+                if (!stack.isEmpty()) // 这里为什么会出现空栈异常
+                    cur = stack.pop();
+                i += 2;
+                if (i < sarr.length) { // 这里为什么会出现数组越界
+                    cur.right = new Node(Integer.parseInt(sarr[i]));
+                    cur = cur.right;
+                    stack.push(cur);
+                    i++; // 这里为什么没有考虑到入栈后还得再向后进一位
+                }
+            } else {
+                cur.left = new Node(Integer.parseInt(sarr[i]));
+                cur = cur.left;
+                stack.push(cur);
+                i += 1;
+            }
+        }
+        return root;
+    }
+
+    public Node deSerilizeQueue(String s){
+        String[] sari = s.split("!");
+        Queue<String> queue = new LinkedList<String>();
+        for (String value : sari) {
+            queue.offer(value);
+        }
+        return byRecursion(queue);
+    }
+
+    private Node byRecursion(Queue<String> queue){
+        String s = queue.poll();
+        if (s.equals("#")){
+            return null;
+        }
+        Node head = new Node(Integer.parseInt(s));
+        head.left = byRecursion(queue);
+        head.right = byRecursion(queue);
+        return head;
+    }
+
+
 
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
@@ -503,7 +606,11 @@ public class TraverseTree {
 
         tree.printTree(root);
 
-        tree.morrisBak(root);
+//        tree.morrisBak(root);
+
+//        tree.seriesTree(root, "pre");
+        Node root1 = tree.deSerilizeQueue("1!2!4!#!#!5!#!#!3!6!#!#!7!#!#!");
+        tree.printTree(root1);
         System.out.println("done!");
     }
 }
