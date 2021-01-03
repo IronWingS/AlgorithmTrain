@@ -1,5 +1,7 @@
 package BinaryTree;
 
+import com.sun.deploy.panel.JreTableModel;
+
 import java.util.*;
 
 // define tree's BinaryTree.Node class
@@ -581,9 +583,6 @@ public class TraverseTree {
             return null;
         }
 
-        StringBuffer sb = new StringBuffer();
-        sb.append("a" + " !");
-
         Node head = new Node(Integer.parseInt(s));
         head.left = byRecursion(queue);
         head.right = byRecursion(queue);
@@ -641,6 +640,116 @@ public class TraverseTree {
         return s;
     }
 
+    /**
+     * 反序列化层序遍历
+     * <p>
+     * 定义方法 返回头节点（字符串）{
+     * 切分字符串为数组
+     * 定义字符串队列
+     * 把数组循环放入队列中
+     * 调用层序遍历子方法
+     * 返回头节点
+     * }
+     * <p>
+     * 层序遍历子节点 返回头节点 （字符串队列s）{
+     * s出队，定义头节点
+     * 定义临时队列t，头节点入队
+     * while(t不为空){
+     * t出队，为头节点head
+     * s出队，队头元素a，调用产生节点子程序，返回节点left
+     * head.left = left
+     * left不为空，left入队
+     * s出队，队头元素a，调用产生节点子程序，返回节点right
+     * head.right = right
+     * right不为空，right入队
+     * }
+     * 返回头节点
+     * }
+     * <p>
+     * 产生节点子程序 返回节点 (字符串 a) {
+     * 判断a是否为#，如果是 new 空节点；如果否 new 该值的子节点 ，为left
+     * 返回节点
+     * }
+     *
+     * @param layerString
+     * @return
+     */
+    public Node deSerilizeLayer(String layerString) {
+        if (layerString == null || layerString.equals(""))
+            return null;
+        String[] layerStrArr = layerString.split("!");
+        Queue<String> strQueue = new LinkedList<>();
+        for (String s : layerStrArr) {
+            strQueue.offer(s);
+        }
+        return generateTreeLayer(strQueue);
+    }
+
+    private Node generateTreeLayer(Queue<String> strQueue) {
+        String str = strQueue.poll();
+        assert str != null;
+        Node head = new Node(Integer.parseInt(str));
+        Queue<Node> nodeQueue = new LinkedList<>();
+        nodeQueue.offer(head);
+        while (!nodeQueue.isEmpty()) {
+            Node cur = nodeQueue.poll();
+            cur.left = createNode(strQueue.poll());
+            cur.right = createNode(strQueue.poll());
+            if (cur.left != null) nodeQueue.offer(cur.left);
+            if (cur.right != null) nodeQueue.offer(cur.right);
+        }
+        return head;
+    }
+
+    private Node createNode(String val) {
+        if (val.equals("#")) {
+            return null;
+        } else {
+            return new Node(Integer.parseInt(val));
+        }
+    }
+
+    /**
+     * 求树中和为目标值的最长子树的长度
+     *
+     *
+     * @param root
+     * @param target
+     * @return
+     */
+    public int getMaxLength(Node root, int target) {
+        if (root == null) {
+            return 0;
+        }
+        HashMap<Integer, Integer> map = new HashMap<>();
+        // 否则递归的时候会报空指针异常的错
+        map.put(0, 0);
+        int maxLength = preOrderRecrusion(root, map, target, 0, 1, 0);
+        return maxLength;
+    }
+
+    private int preOrderRecrusion(Node head, HashMap<Integer, Integer> map, int target, int preSum, int layer, int maxLength) {
+        if (head == null)
+            // 错误点1：得返回最长子树呀，返回0那前边不是白算了嘛
+            return maxLength;
+        int curSum = preSum + head.value;
+        // 错误点2： 所有路径和不在map中的都得放入到map中，所以做算法，那真的得一气呵成，不受外界打扰才行。
+        if (!map.containsKey(curSum)) {
+            map.put(curSum, layer);
+        }
+        if (map.containsKey(curSum - target)) {
+            maxLength = Math.max(maxLength, layer - map.get(curSum - target));
+        }
+        // 错误点3：这里递归的返回值，得保存到maxLength中呀，不然这次递归不是白算了，这个错误的根源就在错误点1那里。
+        maxLength = preOrderRecrusion(head.left, map, target, curSum, layer + 1, maxLength);
+        maxLength = preOrderRecrusion(head.right, map, target, curSum, layer + 1, maxLength);
+        // 避免重复
+        if (layer == map.get(curSum))
+            map.remove(curSum);
+
+        return maxLength;
+    }
+
     public static void main(String[] args) {
         TraverseTree tree = new TraverseTree();
         Node root = tree.createTree(7);
@@ -667,7 +776,11 @@ public class TraverseTree {
 //        tree.seriesTree(root, "pre");
 //        Node root1 = tree.deSerilizeQueue("1!2!4!#!#!5!#!#!3!6!#!#!7!#!#!");
 //        tree.printTree(root1);
-        System.out.println(tree.layerSerilize(root));
+//        tree.printTree(tree.deSerilizeLayer("1!2!3!4!5!6!7!#!#!#!#!#!#!#!#!"));
+//        System.out.println(tree.layerSerilize(root));
+
+        System.out.println(tree.getMaxLength(root, 7));
+
         System.out.println("done!");
     }
 }
